@@ -1,0 +1,28 @@
+<!doctype html>
+<!--
+  Representative of a New Quizzes question rendered with Instructure UI. This is NOT captured
+  from a live New Quizzes course; data-automation names are unverified hypotheses.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>New Quizzes</title>
+    <style>
+      body { font-family: sans-serif; margin: 16px; }
+      .choice { display: flex; gap: 8px; padding: 6px; }
+      .sr { position: absolute; left: -10000px; }
+    </style>
+  </head>
+  <body>
+    <div data-automation="sdk-take-item-question">
+      <div><span>Question 1</span> <span>1 pts</span></div>
+      <div data-automation="sdk-item-body"><p>Which planet is the largest in our solar system?</p></div>
+      <fieldset>
+        <legend><span class="sr">Multiple choice</span></legend>
+        <div class="choice"><input type="radio" id="c1" name="item-7" value="a" /><label for="c1">Mars</label></div>
+        <div class="choice"><input type="radio" id="c2" name="item-7" value="b" /><label for="c2">Jupiter</label></div>
+        <div class="choice"><input type="radio" id="c3" name="item-7" value="c" /><label for="c3">Venus</label></div>
+      </fieldset>
+    </div>
+  </body>
+</html>

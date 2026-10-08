@@ -1,0 +1,75 @@
+<!doctype html>
+<!--
+  A quiz page on another site, in the layouts that trip up question reading: page chrome that
+  ends in "?" (help and password links), a Moodle-style question with its "Select one:" prompt,
+  prompt lines inside the options block or a fieldset legend, stems that are themselves an
+  instruction ("Select the odd one"), and bare inputs followed by their wording.
+  Questions and markup are written for this test.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Quiz: Cells and Numbers</title>
+    <style>
+      body { font-family: sans-serif; margin: 20px; max-width: 720px; }
+      .nav a { margin-right: 16px; }
+      .que, .question { border: 1px solid #ddd; padding: 12px; margin: 14px 0; }
+      .prompt, .options > p, legend { color: #666; font-size: 14px; }
+      label, .r0, .r1 { display: block; padding: 4px 6px; }
+    </style>
+  </head>
+  <body>
+    <div id="page">
+      <div class="nav"><a href="/login">Forgot your password?</a><a href="/help">Need help?</a></div>
+      <h1>Cells and Numbers</h1>
+      <p>Ready to test yourself?</p>
+
+      <div class="que multichoice" id="q1">
+        <div class="qtext"><p>The organelle that makes most ATP is the</p></div>
+        <div class="ablock">
+          <div class="prompt">Select one:</div>
+          <div class="answer">
+            <div class="r0"><input type="radio" name="q1" id="q1a" /><label for="q1a">Ribosome</label></div>
+            <div class="r1"><input type="radio" name="q1" id="q1b" /><label for="q1b">Mitochondrion</label></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="question" id="q2">
+        <p>Which gas do plants absorb from the air?</p>
+        <div class="options">
+          <p>Choose 1 answer:</p>
+          <label><input type="radio" name="q2" />Oxygen</label>
+          <label><input type="radio" name="q2" />Carbon dioxide</label>
+        </div>
+      </div>
+
+      <div class="question" id="q3">
+        <p>Which blood cells carry oxygen?</p>
+        <fieldset>
+          <legend>Possible answers</legend>
+          <label><input type="radio" name="q3" />Platelets</label>
+          <label><input type="radio" name="q3" />Red blood cells</label>
+        </fieldset>
+      </div>
+
+      <div class="question" id="q4">
+        <p>Select the odd one</p>
+        <label><input type="radio" name="q4" />4</label>
+        <label><input type="radio" name="q4" />Apple</label>
+      </div>
+
+      <div class="question" id="q5">
+        <p>Select the prime number:</p>
+        <label><input type="radio" name="q5" />4</label>
+        <label><input type="radio" name="q5" />7</label>
+      </div>
+
+      <div class="question" id="q6">
+        <p>Which planet is closest to the Sun?</p>
+        <input type="radio" name="q6" id="q6a" /> Mercury<br />
+        <input type="radio" name="q6" id="q6b" /> Venus<br />
+      </div>
+    </div>
+  </body>
+</html>

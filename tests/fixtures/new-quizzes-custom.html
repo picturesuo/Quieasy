@@ -1,0 +1,48 @@
+<!doctype html>
+<!--
+  New Quizzes style questions whose choices draw their own circles instead of showing a native
+  radio button: ARIA radios, and native radios hidden off screen behind custom labels. Invented.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>New Quizzes</title>
+    <style>
+      body { font-family: sans-serif; margin: 16px; }
+      .choice { display: block; padding: 6px 6px 6px 30px; position: relative; cursor: pointer; }
+      .choice::before {
+        content: ''; position: absolute; left: 6px; top: 7px; width: 14px; height: 14px;
+        border: 2px solid #6b7280; border-radius: 50%; box-sizing: border-box;
+      }
+      .sr { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+    </style>
+  </head>
+  <body>
+    <div data-automation="sdk-take-item-question" id="aria-question">
+      <div><span>Question 1</span> <span>1 pts</span></div>
+      <div data-automation="sdk-item-body"><p>Which planet is the largest in our solar system?</p></div>
+      <div role="radiogroup" aria-label="Multiple choice">
+        <div class="choice" role="radio" aria-checked="false" tabindex="0">Mars</div>
+        <div class="choice" role="radio" aria-checked="false" tabindex="-1">Jupiter</div>
+        <div class="choice" role="radio" aria-checked="false" tabindex="-1">Venus</div>
+      </div>
+    </div>
+    <div data-automation="sdk-take-item-question" id="hidden-input-question">
+      <div><span>Question 2</span> <span>1 pts</span></div>
+      <div data-automation="sdk-item-body"><p>What is the chemical symbol for gold?</p></div>
+      <fieldset>
+        <legend><span class="sr">Multiple choice</span></legend>
+        <label class="choice"><input class="sr" type="radio" name="gold" value="a" />Ag</label>
+        <label class="choice"><input class="sr" type="radio" name="gold" value="b" />Au</label>
+        <label class="choice"><input class="sr" type="radio" name="gold" value="c" />Fe</label>
+      </fieldset>
+    </div>
+    <script>
+      for (const radio of document.querySelectorAll('[role="radio"]')) {
+        radio.addEventListener('click', () => {
+          for (const other of document.querySelectorAll('[role="radio"]')) other.setAttribute('aria-checked', String(other === radio));
+        });
+      }
+    </script>
+  </body>
+</html>

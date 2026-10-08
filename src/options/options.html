@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quieasy settings</title>
+    <link rel="stylesheet" href="ui.css" />
+  </head>
+  <body class="page">
+    <h1>Quieasy settings</h1>
+
+    <h2>AI service</h2>
+    <p class="muted small">
+      Quieasy uses your own account with one of these services. Each question is one request, billed to you by that
+      service together with the web searches it runs.
+    </p>
+    <form id="ai-form" novalidate>
+      <label for="provider">Service</label>
+      <select id="provider"></select>
+      <p id="provider-note" class="muted small"></p>
+
+      <div id="azure-fields" hidden>
+        <label for="azure-endpoint">Endpoint</label>
+        <input
+          id="azure-endpoint"
+          type="text"
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="https://your-resource.openai.azure.com"
+        />
+        <label for="azure-deployment">Deployment name</label>
+        <input id="azure-deployment" type="text" autocomplete="off" spellcheck="false" placeholder="gpt-5-5" />
+      </div>
+
+      <div id="bedrock-fields" hidden>
+        <label for="bedrock-region">Region</label>
+        <select id="bedrock-region"></select>
+      </div>
+
+      <div id="model-field">
+        <label for="model">Model</label>
+        <select id="model"></select>
+      </div>
+
+      <label for="api-key" id="api-key-label">API key</label>
+      <input id="api-key" type="password" autocomplete="off" spellcheck="false" />
+      <p class="muted small"><span id="key-status"></span> <a id="key-link" target="_blank" rel="noopener noreferrer">Get a key</a></p>
+      <p id="data-note" class="muted small"></p>
+
+      <div class="row">
+        <button type="submit" class="secondary">Save</button>
+        <button id="clear-key" type="button" class="secondary">Remove key</button>
+        <span id="saved" class="saved small" role="status" hidden>Saved</span>
+      </div>
+      <p id="form-error" class="error small" role="alert" hidden></p>
+    </form>
+
+    <h2>Sites Quieasy runs on automatically</h2>
+    <p class="muted small">
+      Quieasy runs on <code>*.instructure.com</code> automatically. On any other site it runs in a tab when you turn it on
+      there with the shortcut or the toolbar button. Add your school's Canvas address (for example
+      canvas.yourschool.edu) or another quiz site here so Quieasy keeps running on every page of it.
+    </p>
+    <form id="site-form" class="row">
+      <input id="site" type="text" placeholder="canvas.yourschool.edu" autocomplete="off" spellcheck="false" />
+      <button type="submit" class="secondary">Add</button>
+    </form>
+    <p id="site-error" class="error small" role="alert" hidden></p>
+    <ul id="sites" class="sites"></ul>
+
+    <h2>Keyboard shortcuts</h2>
+    <p id="shortcuts" class="muted small"></p>
+    <button id="edit-shortcuts" type="button" class="link">Change shortcuts</button>
+
+    <h2>Privacy</h2>
+    <p class="muted small">
+      Quieasy only reads pages after you turn it on. For each question it sends the question wording and answer choices
+      to the AI service you chose, which runs the web searches, and nothing else: no cookies, passwords, page
+      addresses, names or screenshots. Answers are cached in browser memory until the browser restarts. Removing
+      Quieasy from the browser deletes its settings and saved keys.
+    </p>
+    <script src="options.js"></script>
+  </body>
+</html>

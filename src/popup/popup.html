@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quieasy answer key</title>
+    <link rel="stylesheet" href="ui.css" />
+  </head>
+  <body class="popup">
+    <header class="bar">
+      <h1>Quieasy</h1>
+      <button id="toggle" type="button" class="toggle" aria-pressed="false">Off</button>
+    </header>
+    <p id="shortcuts" class="muted small"></p>
+    <div id="notices"></div>
+    <section aria-labelledby="key-title">
+      <h2 id="key-title">Answer key</h2>
+      <p class="muted small">AI answers can be wrong. Check the sources before you rely on one.</p>
+      <ol id="entries" class="entries"></ol>
+      <p id="empty" class="muted" hidden></p>
+    </section>
+    <footer class="footer">
+      <button id="settings" type="button" class="link">Settings</button>
+      <button id="open-tab" type="button" class="link">Open in a tab</button>
+    </footer>
+    <script src="popup.js"></script>
+  </body>
+</html>

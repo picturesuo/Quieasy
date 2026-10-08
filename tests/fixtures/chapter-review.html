@@ -1,0 +1,32 @@
+<!doctype html>
+<!--
+  An ordinary page (its title names no quiz or test) with one question about the US as a country
+  and one that addresses the reader as "us". Only the first is an assessment question.
+  Questions and markup are written for this test.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Chapter 5 Review</title>
+    <style>
+      body { font-family: sans-serif; margin: 20px; max-width: 720px; }
+      .question { border: 1px solid #ddd; padding: 12px; margin: 14px 0; }
+      label { display: block; padding: 4px 6px; }
+    </style>
+  </head>
+  <body>
+    <h1>Chapter 5 Review</h1>
+    <form>
+      <div class="question" id="c1">
+        <p>Which state has the largest population in the US?</p>
+        <label><input type="radio" name="c1" />Texas</label>
+        <label><input type="radio" name="c1" />California</label>
+      </div>
+      <div class="question" id="c2">
+        <p>Which plan is best for us?</p>
+        <label><input type="radio" name="c2" />Monthly</label>
+        <label><input type="radio" name="c2" />Yearly</label>
+      </div>
+    </form>
+  </body>
+</html>

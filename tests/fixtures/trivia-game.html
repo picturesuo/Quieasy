@@ -1,0 +1,64 @@
+<!doctype html>
+<!--
+  Trivia game shaped like Sporcle's multiple-choice games, using the element ids and classes
+  observed on its public pages (#currQuestion.question, #quiz-wrapper > .answer#boxN > .text,
+  prev/next skip buttons). One question shows at a time; NEXT swaps the text in place.
+  Questions and markup are written for this test.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>A-B-C-D Multiple Choice Quiz</title>
+    <style>
+      body { font-family: sans-serif; margin: 20px; }
+      #quiz-wrapper { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 520px; }
+      .answer { border: 1px solid #ccc; padding: 14px; cursor: pointer; text-align: center; }
+      .answer.picked { background: #fde68a; }
+      #gameHeader { display: flex; gap: 30px; }
+    </style>
+  </head>
+  <body>
+    <header id="site-header"><a href="/">Trivia</a> <button type="button">Sign In</button></header>
+    <h1>A-B-C-D Multiple Choice</h1>
+    <h2>Can you pick the right letter for each question?</h2>
+    <div id="gameHeader"><div>QUESTION # <span id="qnum">1</span></div><div>SCORE <span id="score">0/3</span></div><div>TIMER <span id="timer">4:00</span></div></div>
+    <div id="game-wrapper">
+      <div id="questionbox">
+        <div id="currQuestionImageWrapper" class="question" style="display:none"><div id="currQuestionImage"></div></div>
+        <div id="currQuestion" class="question"></div>
+        <div id="skip">
+          <button id="pickprev" class="button-secondary" type="button">prev</button>
+          <button id="picknext" class="button-secondary" type="button">next</button>
+        </div>
+      </div>
+      <div id="answerbox">
+        <div id="quiz-wrapper">
+          <div class="answer playing" id="box1"><div class="image" style="display: none;"></div><div class="text"></div></div>
+          <div class="answer playing" id="box2"><div class="image" style="display: none;"></div><div class="text"></div></div>
+          <div class="answer playing" id="box3"><div class="image" style="display: none;"></div><div class="text"></div></div>
+          <div class="answer playing" id="box4"><div class="image" style="display: none;"></div><div class="text"></div></div>
+        </div>
+      </div>
+    </div>
+    <script>
+      const questions = [
+        ['Which initial appears before Montgomery Burns in his name on The Simpsons?', ['A', 'B', 'C', 'D']],
+        ['Which of these letters is the chemical symbol for boron?', ['A', 'B', 'C', 'D']],
+        ['Which grade is the highest on a standard US report card?', ['A', 'B', 'C', 'D']],
+      ];
+      let current = 0;
+      function show() {
+        document.getElementById('currQuestion').textContent = questions[current][0];
+        document.querySelectorAll('#quiz-wrapper .answer .text').forEach((text, index) => (text.textContent = questions[current][1][index]));
+        document.querySelectorAll('#quiz-wrapper .answer').forEach((box) => box.classList.remove('picked'));
+        document.getElementById('qnum').textContent = String(current + 1);
+      }
+      document.getElementById('picknext').addEventListener('click', () => { current = (current + 1) % questions.length; show(); });
+      document.getElementById('pickprev').addEventListener('click', () => { current = (current + questions.length - 1) % questions.length; show(); });
+      document.querySelectorAll('#quiz-wrapper .answer').forEach((box) => box.addEventListener('click', () => box.classList.add('picked')));
+      let seconds = 240;
+      setInterval(() => { seconds -= 1; document.getElementById('timer').textContent = `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`; }, 1000);
+      show();
+    </script>
+  </body>
+</html>

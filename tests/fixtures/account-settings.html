@@ -1,0 +1,48 @@
+<!doctype html>
+<!--
+  Representative ordinary settings page on a non-Canvas site. It has radio, checkbox and
+  ARIA choice groups whose labels read like questions, but none of them is an assessment:
+  Quieasy must read and send nothing here. Content is invented.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Account settings</title>
+    <style>
+      body { font-family: sans-serif; margin: 20px; }
+      label, [role="radio"] { display: block; padding: 4px 0; }
+    </style>
+  </head>
+  <body>
+    <h1>Account settings</h1>
+    <p>Signed in as Jordan Example (jordan@example.com).</p>
+    <form id="account-settings" action="/account/settings" method="post">
+      <fieldset>
+        <legend>Which email address should we use for receipts?</legend>
+        <label><input type="radio" name="receipts" value="primary" checked /> jordan@example.com</label>
+        <label><input type="radio" name="receipts" value="work" /> jordan.example@work.example</label>
+      </fieldset>
+      <fieldset>
+        <legend>What color theme do you prefer for the dashboard?</legend>
+        <label><input type="radio" name="theme" value="light" /> Light</label>
+        <label><input type="radio" name="theme" value="dark" /> Dark</label>
+        <label><input type="radio" name="theme" value="system" checked /> Match my system</label>
+      </fieldset>
+      <div>
+        <div id="visibility-label">Who can see your profile and course history?</div>
+        <div role="radiogroup" aria-labelledby="visibility-label">
+          <div role="radio" aria-checked="true" tabindex="0">Everyone at my school</div>
+          <div role="radio" aria-checked="false" tabindex="-1">Only my instructors</div>
+          <div role="radio" aria-checked="false" tabindex="-1">Only me</div>
+        </div>
+      </div>
+      <fieldset>
+        <legend>Which updates would you like to receive?</legend>
+        <label><input type="checkbox" name="updates[]" value="grades" checked /> New grades posted</label>
+        <label><input type="checkbox" name="updates[]" value="due" /> Assignments due soon</label>
+        <label><input type="checkbox" name="updates[]" value="news" /> Product news and offers</label>
+      </fieldset>
+      <button type="submit">Save changes</button>
+    </form>
+  </body>
+</html>

@@ -1,0 +1,35 @@
+<!doctype html>
+<!--
+  Representative Canvas Account > Notifications page (/profile/communication). Not a quiz:
+  Quieasy must read nothing here even while it is on. Content and ids are invented.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Notification Preferences</title>
+    <style>
+      body { font-family: sans-serif; margin: 20px; }
+      fieldset div, [role="group"] label { display: block; padding: 4px 0; }
+    </style>
+  </head>
+  <body>
+    <h1>Notification Preferences</h1>
+    <p>Choose how often you want to hear about activity in your courses.</p>
+    <form id="notification-preferences" action="/profile/communication" method="post">
+      <fieldset>
+        <legend>How often should Canvas email you about new announcements?</legend>
+        <div><input type="radio" id="announcements-immediately" name="announcements" value="immediately" /><label for="announcements-immediately">Notify me right away</label></div>
+        <div><input type="radio" id="announcements-daily" name="announcements" value="daily" checked /><label for="announcements-daily">Send a daily summary</label></div>
+        <div><input type="radio" id="announcements-weekly" name="announcements" value="weekly" /><label for="announcements-weekly">Send a weekly summary</label></div>
+        <div><input type="radio" id="announcements-never" name="announcements" value="never" /><label for="announcements-never">Do not send me anything</label></div>
+      </fieldset>
+      <div role="group" aria-labelledby="grading-heading">
+        <h2 id="grading-heading">Which grading updates should be included in your notifications?</h2>
+        <label><input type="checkbox" name="grading[]" value="scores" checked /> Include scores when alerting about grades</label>
+        <label><input type="checkbox" name="grading[]" value="comments" /> Submission comments</label>
+        <label><input type="checkbox" name="grading[]" value="late" /> Late assignment reminders</label>
+      </div>
+      <button type="submit">Save preferences</button>
+    </form>
+  </body>
+</html>

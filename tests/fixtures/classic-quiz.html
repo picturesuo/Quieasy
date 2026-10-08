@@ -1,0 +1,164 @@
+<!doctype html>
+<!--
+  Representative Canvas Classic Quizzes take page. Question markup follows Canvas LMS
+  app/views/quizzes/quizzes/take_quiz.html.erb, _display_question.html.erb and
+  _multi_answer.html.erb (assessing mode). Content and ids are invented.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Quiz: Week 3 Check-in</title>
+    <style>
+      body { font-family: sans-serif; margin: 20px; }
+      .screenreader-only { position: absolute; left: -10000px; }
+      .display_question { border: 1px solid #ccc; margin: 12px 0; padding: 8px; }
+      .answer { padding: 6px; border-top: 1px solid #eee; }
+      .answer_row { display: flex; gap: 8px; cursor: pointer; }
+    </style>
+  </head>
+  <body class="assessing">
+    <div class="loaded">
+      <header class="quiz-header">
+        <h1>Week 3 Check-in</h1>
+        <h2>Quiz Instructions</h2>
+        <div id="quiz-instructions" class="user_content"><p>Open notes and open internet.</p></div>
+      </header>
+      <form id="submit_quiz_form" action="/submit" method="post">
+        <div id="questions" class="assessing">
+          <input type="hidden" name="attempt" value="1" />
+          <div role="region" aria-label="Question" class="quiz_sortable question_holder" id="question_template" style="display: none;">
+            <div class="display_question question multiple_choice_question" id="question_new">
+              <div class="text"><div class="question_text user_content"></div><div class="answers"></div></div>
+            </div>
+          </div>
+
+          <div role="region" aria-label="Question" class="quiz_sortable question_holder">
+            <a name="question_101"></a>
+            <div class="display_question question multiple_choice_question" id="question_101">
+              <a href="#" class="flag_question" role="checkbox" aria-checked="false"><span class="screenreader-only">Flag question: Question 1</span></a>
+              <div class="header">
+                <span class="name question_name" role="heading" aria-level="2">Question 1</span>
+                <span class="question_points_holder">1 pts</span>
+              </div>
+              <div style="display: none;"><span class="question_type">multiple_choice_question</span></div>
+              <div class="text">
+                <div class="original_question_text" style="display: none;">
+                  <textarea disabled style="display: none;" name="question_text" class="textarea_question_text">&lt;p&gt;What is the capital of Australia?&lt;/p&gt;</textarea>
+                </div>
+                <div id="question_101_question_text" class="question_text user_content"><p>What is the capital of Australia?</p></div>
+                <div class="answers">
+                  <fieldset>
+                    <legend class="screenreader-only">Group of answer choices</legend>
+                    <div class="answer">
+                      <label class="answer_row user_content">
+                        <span class="answer_input"><input type="radio" class="question_input" name="question_101" value="1011" id="question_101_answer_1011" aria-labelledby="question_101_answer_1011_label" /></span>
+                        <div class="answer_label" id="question_101_answer_1011_label">Sydney</div>
+                      </label>
+                    </div>
+                    <div class="answer">
+                      <label class="answer_row user_content">
+                        <span class="answer_input"><input type="radio" class="question_input" name="question_101" value="1012" id="question_101_answer_1012" aria-labelledby="question_101_answer_1012_label" /></span>
+                        <div class="answer_label" id="question_101_answer_1012_label">Canberra</div>
+                      </label>
+                    </div>
+                    <div class="answer">
+                      <label class="answer_row user_content">
+                        <span class="answer_input"><input type="radio" class="question_input" name="question_101" value="1013" id="question_101_answer_1013" aria-labelledby="question_101_answer_1013_label" /></span>
+                        <div class="answer_label" id="question_101_answer_1013_label">Melbourne</div>
+                      </label>
+                    </div>
+                  </fieldset>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div role="region" aria-label="Question" class="quiz_sortable question_holder">
+            <div class="display_question question multiple_answers_question" id="question_102">
+              <div class="header">
+                <span class="name question_name" role="heading" aria-level="2">Question 2</span>
+                <span class="question_points_holder">2 pts</span>
+              </div>
+              <div class="text">
+                <div id="question_102_question_text" class="question_text user_content"><p>Which of these are prime numbers? Select all that apply.</p></div>
+                <div class="answers">
+                  <fieldset>
+                    <legend class="screenreader-only">Group of answer choices</legend>
+                    <div class="answer">
+                      <label class="answer_row user_content">
+                        <span class="answer_input">
+                          <input type="hidden" name="question_102_answer_1021" value="0" />
+                          <input type="checkbox" class="question_input" name="question_102_answer_1021" value="1" id="question_102_answer_1021" aria-labelledby="question_102_answer_1021_label" />
+                        </span>
+                        <div class="answer_label" id="question_102_answer_1021_label">2</div>
+                      </label>
+                    </div>
+                    <div class="answer">
+                      <label class="answer_row user_content">
+                        <span class="answer_input">
+                          <input type="hidden" name="question_102_answer_1022" value="0" />
+                          <input type="checkbox" class="question_input" name="question_102_answer_1022" value="1" id="question_102_answer_1022" aria-labelledby="question_102_answer_1022_label" />
+                        </span>
+                        <div class="answer_label" id="question_102_answer_1022_label">9</div>
+                      </label>
+                    </div>
+                    <div class="answer">
+                      <label class="answer_row user_content">
+                        <span class="answer_input">
+                          <input type="hidden" name="question_102_answer_1023" value="0" />
+                          <input type="checkbox" class="question_input" name="question_102_answer_1023" value="1" id="question_102_answer_1023" aria-labelledby="question_102_answer_1023_label" />
+                        </span>
+                        <div class="answer_label" id="question_102_answer_1023_label">11</div>
+                      </label>
+                    </div>
+                  </fieldset>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div role="region" aria-label="Question" class="quiz_sortable question_holder">
+            <div class="display_question question true_false_question" id="question_103">
+              <div class="header">
+                <span class="name question_name" role="heading" aria-level="2">Question 3</span>
+                <span class="question_points_holder">1 pts</span>
+              </div>
+              <div class="text">
+                <div id="question_103_question_text" class="question_text user_content"><p>Quieasy fixture question with no known answer: the moon is made of cheese.</p></div>
+                <div class="answers">
+                  <fieldset>
+                    <legend class="screenreader-only">Group of answer choices</legend>
+                    <div class="answer">
+                      <label class="answer_row user_content">
+                        <span class="answer_input"><input type="radio" class="question_input" name="question_103" value="1031" id="question_103_answer_1031" aria-labelledby="question_103_answer_1031_label" /></span>
+                        <div class="answer_label" id="question_103_answer_1031_label">True</div>
+                      </label>
+                    </div>
+                    <div class="answer">
+                      <label class="answer_row user_content">
+                        <span class="answer_input"><input type="radio" class="question_input" name="question_103" value="1032" id="question_103_answer_1032" aria-labelledby="question_103_answer_1032_label" /></span>
+                        <div class="answer_label" id="question_103_answer_1032_label">False</div>
+                      </label>
+                    </div>
+                  </fieldset>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn submit_button quiz_submit" id="submit_quiz_button">Submit Quiz</button>
+        </div>
+      </form>
+    </div>
+    <script>
+      // Stand-in for a page that swaps question content in place without navigating.
+      window.replaceFirstQuestion = (stem, choices) => {
+        document.querySelector('#question_101_question_text').innerHTML = `<p>${stem}</p>`;
+        document.querySelectorAll('#question_101 .answer_label').forEach((label, index) => {
+          label.textContent = choices[index];
+        });
+      };
+    </script>
+  </body>
+</html>

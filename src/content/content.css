@@ -1,0 +1,35 @@
+/*
+ * Quieasy hover dot. Shows only while the user's own pointer is over a choice Quieasy has marked
+ * correct: a 3px faint dark gray dot centered in the native radio or checkbox, or just after the
+ * choice for custom choices. It is absolutely positioned, so nothing on the page moves, and it
+ * ignores the pointer. Hovering a <label> also counts as hovering its control.
+ */
+[data-quieasy="correct"]:hover [data-quieasy-dot]::after,
+[data-quieasy="correct"][data-quieasy-dot]:hover::after {
+  content: '' !important;
+  display: inline !important;
+  position: absolute !important;
+  width: 3px !important;
+  height: 3px !important;
+  border-radius: 50% !important;
+  background: rgba(55, 55, 55, 0.6) !important;
+  pointer-events: none !important;
+}
+
+[data-quieasy="correct"]:hover [data-quieasy-dot="native"],
+[data-quieasy="correct"][data-quieasy-dot="native"]:hover {
+  position: relative !important;
+}
+
+[data-quieasy="correct"]:hover [data-quieasy-dot="native"]::after,
+[data-quieasy="correct"][data-quieasy-dot="native"]:hover::after {
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+/* Left at its static position: just after the choice's last line, like a period. */
+[data-quieasy="correct"]:hover [data-quieasy-dot="adjacent"]::after,
+[data-quieasy="correct"][data-quieasy-dot="adjacent"]:hover::after {
+  margin: 0.7em 0 0 3px !important;
+}

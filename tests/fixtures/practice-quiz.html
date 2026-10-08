@@ -1,0 +1,93 @@
+<!doctype html>
+<!--
+  Representative non-Canvas practice quiz: plain radio and checkbox groups in different
+  layouts, an ARIA custom radio widget, a question in a same-origin frame, and ordinary
+  site controls (navigation, display options, newsletter) Quieasy must leave alone.
+  Content is invented.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Unit 3 Practice Quiz - Biology 101</title>
+    <style>
+      body { font-family: sans-serif; margin: 20px; max-width: 760px; }
+      label, [role="radio"] { display: block; padding: 4px 6px; cursor: pointer; }
+      [role="radio"][aria-checked="true"] { outline: 2px solid #2563eb; }
+      .question { margin: 18px 0; }
+      iframe { width: 100%; height: 170px; border: 0; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <nav aria-label="Site">
+        <a href="/">Home</a> · <a href="/biology">Biology 101</a>
+        <span>Text size:</span>
+        <label><input type="radio" name="textsize" value="normal" checked /> Normal text size for reading</label>
+        <label><input type="radio" name="textsize" value="large" /> Large text size for reading</label>
+      </nav>
+    </header>
+    <main>
+      <h1>Unit 3 Practice Quiz</h1>
+      <p>Open book. Answer every question, then press Submit.</p>
+      <div role="toolbar" aria-label="Display options">
+        <label><input type="checkbox" name="show-timer" /> Show the countdown timer</label>
+        <label><input type="checkbox" name="show-progress" checked /> Show the progress bar</label>
+      </div>
+      <form id="quiz" action="/submit" method="post">
+        <div class="question" id="q1">
+          <p>1. What is the powerhouse of the cell?</p>
+          <div class="options">
+            <label><input type="radio" name="q1" value="a" /> Nucleus</label>
+            <label><input type="radio" name="q1" value="b" /> Mitochondria</label>
+            <label><input type="radio" name="q1" value="c" /> Ribosome</label>
+          </div>
+        </div>
+
+        <fieldset class="question" id="q2">
+          <legend>2. Which of these are noble gases? Select all that apply.</legend>
+          <label><input type="checkbox" name="q2[]" value="he" /> Helium</label>
+          <label><input type="checkbox" name="q2[]" value="n" /> Nitrogen</label>
+          <label><input type="checkbox" name="q2[]" value="ne" /> Neon</label>
+          <label><input type="checkbox" name="q2[]" value="o" /> Oxygen</label>
+        </fieldset>
+
+        <h3 id="q3">3. Which blood cells carry oxygen around the body?</h3>
+        <ul class="options">
+          <li><input type="radio" id="q3a" name="q3" value="a" /><label for="q3a">White blood cells</label></li>
+          <li><input type="radio" id="q3b" name="q3" value="b" /><label for="q3b">Red blood cells</label></li>
+          <li><input type="radio" id="q3c" name="q3" value="c" /><label for="q3c">Platelets</label></li>
+        </ul>
+
+        <div class="question" id="q4">
+          <div id="q4-text">4. Which organelle carries out photosynthesis in plant cells?</div>
+          <div role="radiogroup" aria-labelledby="q4-text">
+            <div role="radio" aria-checked="false" tabindex="0" id="q4a">Golgi apparatus</div>
+            <div role="radio" aria-checked="false" tabindex="-1" id="q4b">Chloroplast</div>
+            <div role="radio" aria-checked="false" tabindex="-1" id="q4c">Lysosome</div>
+          </div>
+        </div>
+
+        <iframe id="q5-frame" title="Question 5" src="/biology/quiz-3/question-5"></iframe>
+
+        <button type="submit">Submit</button>
+      </form>
+    </main>
+    <footer>
+      <form id="newsletter" action="/newsletter" method="post">
+        <fieldset>
+          <legend>How often should we email you study tips?</legend>
+          <label><input type="radio" name="freq" value="daily" /> Every day</label>
+          <label><input type="radio" name="freq" value="weekly" /> Once a week</label>
+          <label><input type="radio" name="freq" value="never" /> Never</label>
+        </fieldset>
+      </form>
+    </footer>
+    <script>
+      for (const radio of document.querySelectorAll('[role="radio"]')) {
+        radio.addEventListener('click', () => {
+          for (const other of radio.parentElement.querySelectorAll('[role="radio"]')) other.setAttribute('aria-checked', String(other === radio));
+        });
+      }
+    </script>
+  </body>
+</html>
