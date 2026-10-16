@@ -47,7 +47,7 @@ Then hover over an answer choice. If the AI picked it, you see a faint dot. Ques
 
 ## Privacy
 
-Quieasy reads nothing until you turn it on, and it sends only the question and its answer choices to the AI service you picked. No cookies, no passwords, no page address, no tracking. The AI service does the web search. It only works on quizzes that are plain text on the page, so it will miss some.
+Quieasy reads nothing until you turn it on, and it sends only the question and its answer choices to the AI service you picked. No cookies, no passwords, no page address, no tracking. The AI service does the web search. It only works on quizzes that are plain text on the page, so it will miss some. On some Canvas quizzes, opening the answer key may be logged as leaving the page.
 
 Details are in [SECURITY.md](SECURITY.md).
 
