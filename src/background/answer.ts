@@ -38,7 +38,8 @@ export async function answerQuestion(
 
 /**
  * Checks a reply and turns it into what the answer key and the hover dot use. Anything malformed
- * becomes an error; only high or medium confidence with a valid choice set counts as answered.
+ * becomes an error. A valid choice set counts as answered at high or medium confidence and as a
+ * best guess at low confidence; without one the reply is unsure, and Quieasy never picks for it.
  */
 export function toAnswerRecord(question: QuestionData, reply: ProviderReply, queuedMs: number, providerMs: number): AnswerRecord {
   const base = {
@@ -67,14 +68,11 @@ export function toAnswerRecord(question: QuestionData, reply: ProviderReply, que
   }
   if (sources.length === 0) sources.push(...reply.cited.slice(0, MAX_FALLBACK_CITATIONS));
 
-  const definite =
-    parsed.confidence !== 'low' &&
-    parsed.letters.length > 0 &&
-    (question.kind === 'multiple' || parsed.letters.length === 1);
+  const chosen = parsed.letters.length > 0 && (question.kind === 'multiple' || parsed.letters.length === 1);
   return {
     ...base,
-    status: definite ? 'answered' : 'unsure',
-    correct: definite
+    status: !chosen ? 'unsure' : parsed.confidence === 'low' ? 'guessed' : 'answered',
+    correct: chosen
       ? parsed.letters.map((letter) => normalizeText(question.choices[letter.charCodeAt(0) - 65] ?? ''))
       : [],
     confidence: parsed.confidence,

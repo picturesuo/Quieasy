@@ -104,7 +104,7 @@ test('shows a faint dot only while the user hovers the correct choice', async ()
   await page.hover(choice(101, 1));
   expect(await dot(page, choice(101, 1))).toBeNull();
   await page.hover(choice(101, 2));
-  expect(await dotOf(page.locator(choice(101, 2)))).toEqual({ placement: 'native', background: backgroundOff });
+  expect(await dotOf(page.locator(choice(101, 2)))).toEqual({ placement: 'native', shape: 'dot', background: backgroundOff });
   await evidence(page, 'dot-1-native-on-hover', page.locator('#question_101'));
   await page.mouse.move(5, 5);
   expect(await dot(page, choice(101, 2))).toBeNull();
@@ -120,6 +120,37 @@ test('shows a faint dot only while the user hovers the correct choice', async ()
     await page.hover(choice(103, index));
     expect(await dot(page, choice(103, index))).toBeNull();
   }
+});
+
+test('a best guess shows a faint ring instead of the dot and is labeled in the answer key', async () => {
+  env.answers = [{ match: /capital of Australia/, correct: ['Canberra'], confidence: 'low' }];
+  const page = await openQuiz();
+  await env.setEnabled(true);
+  await expect(page.locator('#question_101 [data-quieasy="guess"]')).toHaveCount(1);
+  await expect(page.locator('[data-quieasy="correct"]')).toHaveCount(0);
+  const backgroundOff = (await dotOf(page.locator(choice(101, 2)))).background;
+
+  await page.mouse.move(5, 5);
+  expect(await dot(page, choice(101, 2))).toBeNull();
+  await page.hover(choice(101, 1));
+  expect(await dot(page, choice(101, 1))).toBeNull();
+  await page.hover(choice(101, 2));
+  expect(await dotOf(page.locator(choice(101, 2)))).toEqual({ placement: 'native', shape: 'ring', background: backgroundOff });
+  await evidence(page, 'dot-7-guess-ring-on-hover', page.locator('#question_101'));
+  await page.mouse.move(5, 5);
+  expect(await dot(page, choice(101, 2))).toBeNull();
+  await expectNoInjectedUi(page);
+
+  const key = await env.context.newPage();
+  await key.goto(env.extensionUrl(`popup.html?tabId=${await tabIdOf(QUIZ_URL)}`));
+  const entry = key.locator('.entry').nth(0);
+  await expect(entry.locator('.status')).toHaveText('best guess');
+  await expect(entry.locator('.answer')).toHaveText('Best guess: B. Canberra');
+  await expect(entry).toContainText('Mock explanation from the test server.');
+  await expect(entry.locator('button', { hasText: 'Try again' })).toHaveCount(1);
+  await evidence(key, '03-answer-key-guess');
+  await key.close();
+  await page.close();
 });
 
 test('sends only the question and choices, with the API key only to Anthropic', async () => {
@@ -389,7 +420,7 @@ test('custom choices without a visible native control get a faint dot just after
   await page.hover(aria(1));
   expect(await dot(page, aria(1))).toBeNull();
   await page.hover(aria(2));
-  expect(await dotOf(page.locator(aria(2)))).toEqual({ placement: 'adjacent', background: backgroundOff });
+  expect(await dotOf(page.locator(aria(2)))).toEqual({ placement: 'adjacent', shape: 'dot', background: backgroundOff });
   await evidence(page, 'dot-5-custom-aria-on-hover', page.locator('#aria-question'));
   // The page's own ::before circle is untouched.
   expect(await page.locator(aria(2)).evaluate((element) => getComputedStyle(element, '::before').borderTopWidth)).toBe('2px');

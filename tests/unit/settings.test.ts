@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
+import { responsesRequest, type ResponsesConfig } from '../../src/background/providers/responses';
 import {
   awsAccessKeyProblem,
   azureOrigin,
+  BEDROCK_MODELS,
   defaultAiSettings,
   endpointPermission,
   endpointUrl,
@@ -10,9 +12,15 @@ import {
   readAiSettings,
   type AiSettings,
 } from '../../src/shared/providers';
+import type { QuestionData } from '../../src/shared/types';
 
 // Synthetic credentials only.
 const KEY = 'test-key-not-real-0000';
+
+const question: QuestionData = {
+  key: 'q1', kind: 'single', stem: 'What is the capital of Australia?', choices: ['Sydney', 'Canberra', 'Melbourne'],
+  hasImages: false, label: 'Question 1', source: 'canvas-classic',
+};
 
 describe('stored settings', () => {
   it('keeps an Anthropic key and model saved before other services were supported', () => {
@@ -57,6 +65,21 @@ describe('stored settings', () => {
       if (!('config' in result)) throw new Error(result.missing);
       expect(endpointUrl(result.config)).toBe(url);
       expect(endpointPermission(settings)).toBe(permission);
+    }
+  });
+
+  it('keeps a saved Bedrock choice as stored and sends its exact model ID', () => {
+    // The shape the options page saves, field order included.
+    const stored = { ai: { ...defaultAiSettings(), provider: 'bedrock', bedrock: { apiKey: KEY, model: 'openai.gpt-5.6-sol', region: 'us-east-2' } } };
+    const settings = readAiSettings(structuredClone(stored));
+    expect(settings).toEqual(stored.ai);
+    const result = providerConfig(settings);
+    if (!('config' in result)) throw new Error(result.missing);
+    expect(responsesRequest(question, result.config as ResponsesConfig).model).toBe('openai.gpt-5.6-sol');
+    for (const { id } of BEDROCK_MODELS) {
+      const config = providerConfig({ ...settings, bedrock: { ...settings.bedrock, model: id } });
+      if (!('config' in config)) throw new Error(config.missing);
+      expect(responsesRequest(question, config.config as ResponsesConfig).model).toBe(id);
     }
   });
 
