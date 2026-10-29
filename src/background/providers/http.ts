@@ -1,8 +1,17 @@
+import { asRecord } from './parse';
+
+/**
+ * Service error codes Quieasy explains. Amazon Bedrock answers a valid key on an account that
+ * may not use the model with HTTP 401 and `access_denied`; a bad key gets `invalid_api_key`.
+ */
+export type ProviderErrorCode = 'access_denied';
+
 /** Why a request to the AI service failed. Holds no response text, so it can never echo a key. */
 export class ProviderError extends Error {
   constructor(
     readonly kind: 'http' | 'network' | 'timeout' | 'invalid-response',
     readonly status: number | null = null,
+    readonly code: ProviderErrorCode | null = null,
   ) {
     super(kind === 'http' ? `HTTP ${status}` : kind);
     this.name = 'ProviderError';
@@ -52,7 +61,7 @@ export async function postJson(url: string, headers: Record<string, string>, bod
         await wait(retryDelay(response.headers.get('retry-after')), options.signal);
         continue;
       }
-      throw new ProviderError('http', response.status);
+      throw new ProviderError('http', response.status, await errorCode(response, options.signal));
     }
     try {
       return await response.json();
@@ -61,6 +70,17 @@ export async function postJson(url: string, headers: Record<string, string>, bod
       if (timeout.aborted) throw new ProviderError('timeout');
       throw new ProviderError('invalid-response');
     }
+  }
+}
+
+/** The reply's `error.code` when it is one Quieasy explains, else null. Keeps nothing else from the reply. */
+async function errorCode(response: Response, signal: AbortSignal): Promise<ProviderErrorCode | null> {
+  try {
+    const code = asRecord(asRecord(await response.json()).error).code;
+    return code === 'access_denied' ? code : null;
+  } catch {
+    signal.throwIfAborted();
+    return null;
   }
 }
 

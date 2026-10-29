@@ -152,6 +152,28 @@ test('a rejected key shows a fixed message, never the service reply or the key',
   await expect(page.locator('[data-quieasy]')).toHaveCount(0);
 });
 
+test('a Bedrock account without access to the model is not reported as a rejected key', async () => {
+  // The reply Amazon Bedrock sends a valid key whose AWS account may not use the model.
+  const denied = { error: {
+    code: 'access_denied',
+    message: 'openai.gpt-5.6-sol is not available for this account. You can explore other available models on Amazon Bedrock. For additional access options, contact AWS Sales at https://aws.amazon.com/contact-us/sales-support/',
+    param: null,
+    type: 'permission_denied_error',
+  } };
+  env.answers = [{ match: /./, correct: [], status: 401, errorBody: denied }];
+  await env.setAiSettings({ provider: 'bedrock', bedrock: { apiKey: 'bedrock-api-key-synthetic', region: 'us-east-1', model: 'openai.gpt-5.6-sol' } });
+  const page = await env.context.newPage();
+  await page.goto(QUIZ_URL);
+  await env.setEnabled(true);
+  const key = await answerKey(QUIZ_URL);
+  await expect(key.locator('.status.error')).toHaveCount(3);
+  await expect(key.locator('.entry').nth(0)).toContainText('Amazon Bedrock accepted the key, but this AWS account does not have access to this model.');
+  await expect(key.locator('body')).not.toContainText('rejected the API key');
+  await expect(key.locator('body')).not.toContainText('AWS Sales');
+  await expect(key.locator('body')).not.toContainText('bedrock-api-key-synthetic');
+  await expect(page.locator('[data-quieasy]')).toHaveCount(0);
+});
+
 test('a refusal from a Responses API service never shows a dot', async () => {
   env.answers = [{ match: /capital of Australia/, correct: ['Canberra'], refuse: true }];
   await env.setAiSettings({ provider: 'bedrock', bedrock: { apiKey: 'bedrock-api-key-synthetic', region: 'us-east-1', model: 'openai.gpt-5.6-sol' } });
