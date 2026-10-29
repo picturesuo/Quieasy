@@ -160,6 +160,9 @@ export function describeError(error: unknown, config: ProviderConfig): string {
     case 400:
       return `${label} rejected the request (HTTP 400). Check that web search is enabled for your account and model.`;
     case 401:
+      if (config.provider === 'bedrock' && error.code === 'access_denied') {
+        return `${label} accepted the key, but this AWS account does not have access to this model.`;
+      }
       return `${label} rejected the API key. Check it in Quieasy settings.`;
     case 403:
       return `This ${label} key is not allowed to use this model or web search.`;

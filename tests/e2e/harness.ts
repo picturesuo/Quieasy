@@ -28,6 +28,8 @@ export interface MockAnswer {
   confidence?: 'high' | 'medium' | 'low';
   delayMs?: number;
   status?: number;
+  /** The failure reply's body; a generic error that echoes the key when unset. */
+  errorBody?: unknown;
   refuse?: boolean;
 }
 
@@ -241,7 +243,7 @@ export class TestEnv {
     if (answer?.delayMs) await new Promise((resolve) => setTimeout(resolve, answer.delayMs));
     if (answer?.status) {
       res.writeHead(answer.status, { 'content-type': 'application/json' });
-      res.end(JSON.stringify({ type: 'error', error: { type: 'api_error', message: `mock failure for ${String(req.headers['x-api-key'] ?? req.headers['api-key'] ?? req.headers.authorization)}` } }));
+      res.end(JSON.stringify(answer.errorBody ?? { type: 'error', error: { type: 'api_error', message: `mock failure for ${String(req.headers['x-api-key'] ?? req.headers['api-key'] ?? req.headers.authorization)}` } }));
       return null;
     }
     const letters = (answer?.correct ?? [])

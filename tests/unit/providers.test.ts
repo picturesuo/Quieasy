@@ -246,6 +246,19 @@ describe('answerQuestion', () => {
     }
   });
 
+  it('tells an account without access to the model apart from a rejected key', async () => {
+    const denied = { error: { code: 'access_denied', message: `openai.gpt-5.6-sol is not available for this account. ${KEY}`, type: 'permission_denied_error' } };
+    const invalid = { error: { code: 'invalid_api_key', message: 'The security token included in the request is invalid.', type: 'permission_denied_error' } };
+    const noAccess = await answerQuestion(question, bedrock, signal(), 0, fakeFetch([[401, denied]]));
+    expect(noAccess.error).toBe('Amazon Bedrock accepted the key, but this AWS account does not have access to this model.');
+    expect(JSON.stringify(noAccess)).not.toContain(KEY);
+    expect(JSON.stringify(noAccess)).not.toContain('not available');
+    const rejected = await answerQuestion(question, bedrock, signal(), 0, fakeFetch([[401, invalid]]));
+    expect(rejected.error).toBe('Amazon Bedrock rejected the API key. Check it in Quieasy settings.');
+    const otherService = await answerQuestion(question, openai, signal(), 0, fakeFetch([[401, denied]]));
+    expect(otherService.error).toBe('OpenAI API rejected the API key. Check it in Quieasy settings.');
+  });
+
   it('retries once after a rate limit, then reports it', async () => {
     const ok = responsesReply({ letters: ['B'], confidence: 'high', explanation: 'ok', source_urls: [] });
     const sent: Sent[] = [];
