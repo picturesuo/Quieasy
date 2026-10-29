@@ -152,6 +152,59 @@ test('a rejected key shows a fixed message, never the service reply or the key',
   await expect(page.locator('[data-quieasy]')).toHaveCount(0);
 });
 
+test('Bedrock GPT-6.1 Sol: select it with us-east-1, save, reload, and every question uses exactly that model', async () => {
+  await env.setAiSettings({ provider: 'bedrock', bedrock: { apiKey: 'bedrock-api-key-saved-synthetic', region: 'us-east-2', model: 'openai.gpt-5.6-sol' } });
+  const settings = await openSettings();
+  await expect(settings.locator('#model')).toHaveValue('openai.gpt-5.6-sol');
+  await expect(settings.locator('#model option')).toContainText(['GPT-5.6 Sol', 'GPT-6.1 Sol', 'GPT-5.6 Terra', 'GPT-5.6 Luna']);
+
+  // The saved us-east-2 region cannot serve 6.1 Sol: say so and keep what was saved.
+  await settings.selectOption('#model', 'openai.gpt-6.1-sol');
+  await settings.click('button[type="submit"]');
+  await expect(settings.locator('#form-error')).toContainText('only available in US East (N. Virginia)');
+  expect((await env.storedLocal()).ai).toMatchObject({ bedrock: { region: 'us-east-2', model: 'openai.gpt-5.6-sol' } });
+
+  await settings.selectOption('#bedrock-region', 'us-east-1');
+  await settings.click('button[type="submit"]');
+  await expect(settings.locator('#saved')).toBeVisible();
+  // The saved key is kept when no new one is typed.
+  expect((await env.storedLocal()).ai).toMatchObject({
+    provider: 'bedrock',
+    bedrock: { apiKey: 'bedrock-api-key-saved-synthetic', region: 'us-east-1', model: 'openai.gpt-6.1-sol' },
+  });
+
+  const reloaded = await openSettings();
+  await expect(reloaded.locator('#model')).toHaveValue('openai.gpt-6.1-sol');
+  await expect(reloaded.locator('#bedrock-region')).toHaveValue('us-east-1');
+  await expect(reloaded.locator('#key-status')).toContainText('A key is saved');
+
+  const page = await env.context.newPage();
+  await page.goto(QUIZ_URL);
+  await env.setEnabled(true);
+  await expect(page.locator('[data-quieasy="correct"]')).toHaveCount(3);
+  await expect.poll(() => env.requests.length).toBe(3);
+  for (const request of env.requests) {
+    expect(request.host).toBe(BEDROCK_HOST);
+    expect(request.path).toBe('/openai/v1/responses');
+    expect(request.body.model).toBe('openai.gpt-6.1-sol');
+    const format = (request.body.text as { format: { type: string; name: string; strict: boolean } }).format;
+    expect(format).toMatchObject({ type: 'json_schema', strict: true });
+    expect(request.body.tools).toEqual([{ type: 'web_search', external_web_access: false, search_context_size: 'low' }]);
+  }
+});
+
+test('Bedrock GPT-6.1 Sol: an account without access stays an error, never a fallback model', async () => {
+  env.answers = [{ match: /./, correct: [], status: 401 }];
+  await env.setAiSettings({ provider: 'bedrock', bedrock: { apiKey: 'bedrock-api-key-synthetic', region: 'us-east-1', model: 'openai.gpt-6.1-sol' } });
+  const page = await env.context.newPage();
+  await page.goto(QUIZ_URL);
+  await env.setEnabled(true);
+  const key = await answerKey(QUIZ_URL);
+  await expect(key.locator('.status.error')).toHaveCount(3);
+  await expect(page.locator('[data-quieasy]')).toHaveCount(0);
+  expect(new Set(env.requests.map((request) => request.body.model))).toEqual(new Set(['openai.gpt-6.1-sol']));
+});
+
 test('a refusal from a Responses API service never shows a dot', async () => {
   env.answers = [{ match: /capital of Australia/, correct: ['Canberra'], refuse: true }];
   await env.setAiSettings({ provider: 'bedrock', bedrock: { apiKey: 'bedrock-api-key-synthetic', region: 'us-east-1', model: 'openai.gpt-5.6-sol' } });

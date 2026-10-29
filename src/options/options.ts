@@ -6,6 +6,7 @@ import {
   azureOrigin,
   BEDROCK_MODELS,
   BEDROCK_REGIONS,
+  bedrockRegionProblem,
   endpointPermission,
   isDeploymentName,
   keyHint,
@@ -52,7 +53,7 @@ const PROVIDER_NOTES: Record<ProviderId, string> = {
   azure:
     'A model deployment in your Azure OpenAI or Microsoft Foundry resource, used through the v1 Responses API with web search (Grounding with Bing, billed by Microsoft). Microsoft notes that web search data leaves your Azure compliance and geographic boundary, and a subscription admin can turn web search off.',
   bedrock:
-    'OpenAI GPT-5.6 models on Amazon Bedrock with Bedrock Web Search, which Quieasy limits to Amazon\'s own search index and page cache. Use a short-term Bedrock API key (Bedrock console, API keys, Short-term API keys): it lasts at most 12 hours and works only in the Region it was created in. AWS recommends long-term keys only for trying Bedrock out. Never paste AWS access keys here.',
+    'OpenAI GPT-6.1 and GPT-5.6 models on Amazon Bedrock with Bedrock Web Search, which Quieasy limits to Amazon\'s own search index and page cache. Use a short-term Bedrock API key (Bedrock console, API keys, Short-term API keys): it lasts at most 12 hours and works only in the Region it was created in. AWS recommends long-term keys only for trying Bedrock out. Never paste AWS access keys here.',
 };
 
 let settings: AiSettings = readAiSettings({});
@@ -146,6 +147,8 @@ function draft(): { next: AiSettings } | { error: string } {
     case 'bedrock': {
       const problem = awsAccessKeyProblem(apiKey);
       if (problem) return { error: problem };
+      const regionProblem = bedrockRegionProblem(modelSelect.value, bedrockRegion.value);
+      if (regionProblem) return { error: regionProblem };
       next.bedrock = { apiKey, region: bedrockRegion.value, model: modelSelect.value };
       break;
     }
