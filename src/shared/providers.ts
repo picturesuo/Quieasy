@@ -11,6 +11,11 @@ export interface ModelOption {
   label: string;
 }
 
+export interface BedrockModel extends ModelOption {
+  /** Regions that serve this model on bedrock-mantle, when it is not every Bedrock Region Quieasy offers. */
+  regions?: readonly string[];
+}
+
 export interface AnthropicModel extends ModelOption {
   /** output_config.effort, or null for models that reject the parameter. */
   effort: 'low' | 'medium' | null;
@@ -30,9 +35,15 @@ export const OPENAI_MODELS: readonly ModelOption[] = [
   { id: 'gpt-6-luna', label: 'GPT-6 Luna - fastest, least accurate' },
 ];
 
-/** OpenAI models that Amazon Bedrock serves with its Web Search tool (bedrock-mantle, Responses API). */
-export const BEDROCK_MODELS: readonly ModelOption[] = [
+/**
+ * OpenAI models on Amazon Bedrock (bedrock-mantle, Responses API). Every request asks for Bedrock Web
+ * Search; AWS's GPT-6.1 Sol page lists server-side tools as unsupported while its Web Search page covers
+ * GPT-5.4 and later, so a 6.1 Sol request that the service rejects is shown as an error, never retried
+ * without search or on another model.
+ */
+export const BEDROCK_MODELS: readonly BedrockModel[] = [
   { id: 'openai.gpt-5.6-sol', label: 'GPT-5.6 Sol - most accurate (default)' },
+  { id: 'openai.gpt-6.1-sol', label: 'GPT-6.1 Sol - newest, us-east-1 only', regions: ['us-east-1'] },
   { id: 'openai.gpt-5.6-terra', label: 'GPT-5.6 Terra - balanced' },
   { id: 'openai.gpt-5.6-luna', label: 'GPT-5.6 Luna - fastest, least accurate' },
 ];
@@ -43,6 +54,18 @@ export const BEDROCK_REGIONS: readonly ModelOption[] = [
   { id: 'us-east-2', label: 'US East (Ohio) - us-east-2' },
   { id: 'us-west-2', label: 'US West (Oregon) - us-west-2' },
 ];
+
+/** Why a Bedrock model cannot be used in a Region, or null when it can. */
+export function bedrockRegionProblem(model: string, region: string): string | null {
+  const regions = BEDROCK_MODELS.find((option) => option.id === model)?.regions;
+  if (!regions || regions.includes(region)) return null;
+  const names = regions.map((id) => BEDROCK_REGIONS.find((option) => option.id === id)?.label ?? id);
+  return `${labelOf(model)} is only available in ${names.join(' or ')}. Pick that Region, or another model.`;
+}
+
+function labelOf(model: string): string {
+  return BEDROCK_MODELS.find((option) => option.id === model)?.label.split(' - ')[0] ?? model;
+}
 
 /** Host suffixes of Azure OpenAI and Microsoft Foundry resources that serve the v1 Responses API. */
 const AZURE_HOST_SUFFIXES = ['.openai.azure.com', '.cognitiveservices.azure.com', '.services.ai.azure.com'];

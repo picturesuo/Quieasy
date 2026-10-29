@@ -4,6 +4,7 @@ import {
   awsAccessKeyProblem,
   azureOrigin,
   BEDROCK_MODELS,
+  bedrockRegionProblem,
   defaultAiSettings,
   endpointPermission,
   endpointUrl,
@@ -81,6 +82,24 @@ describe('stored settings', () => {
       if (!('config' in config)) throw new Error(config.missing);
       expect(responsesRequest(question, config.config as ResponsesConfig).model).toBe(id);
     }
+  });
+
+  it('offers Bedrock GPT-6.1 Sol under its documented ID, in us-east-1 only', () => {
+    const sol = BEDROCK_MODELS.find((model) => model.id === 'openai.gpt-6.1-sol');
+    expect(sol).toBeDefined();
+    expect(BEDROCK_MODELS.map((model) => model.id)).toEqual(expect.arrayContaining(['openai.gpt-5.6-sol', 'openai.gpt-5.6-terra', 'openai.gpt-5.6-luna']));
+    expect(bedrockRegionProblem('openai.gpt-6.1-sol', 'us-east-1')).toBeNull();
+    expect(bedrockRegionProblem('openai.gpt-6.1-sol', 'us-east-2')).toContain('US East (N. Virginia)');
+    expect(bedrockRegionProblem('openai.gpt-5.6-sol', 'us-east-2')).toBeNull();
+    expect(bedrockRegionProblem('openai.gpt-5.6-sol', 'us-west-2')).toBeNull();
+    // A saved 6.1 choice survives a read untouched and is the model sent.
+    const stored = { ai: { ...defaultAiSettings(), provider: 'bedrock', bedrock: { apiKey: KEY, model: 'openai.gpt-6.1-sol', region: 'us-east-1' } } };
+    const settings = readAiSettings(structuredClone(stored));
+    expect(settings).toEqual(stored.ai);
+    const config = providerConfig(settings);
+    if (!('config' in config)) throw new Error(config.missing);
+    expect(endpointUrl(config.config)).toBe('https://bedrock-mantle.us-east-1.api.aws/openai/v1/responses');
+    expect(responsesRequest(question, config.config as ResponsesConfig).model).toBe('openai.gpt-6.1-sol');
   });
 
   it('asks for every Azure field', () => {
