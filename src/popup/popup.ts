@@ -128,6 +128,7 @@ function renderEntry(entry: AnswerKeyEntry, index: number): HTMLLIElement {
   status.className = `status ${state}`;
   status.textContent = {
     answered: `${answer?.confidence ?? ''} confidence`.trim(),
+    guessed: 'best guess',
     unsure: 'not sure',
     error: 'failed',
     pending: 'searching',
@@ -144,9 +145,10 @@ function renderEntry(entry: AnswerKeyEntry, index: number): HTMLLIElement {
   if (indexes.length > 0) {
     const line = document.createElement('p');
     line.className = 'answer';
-    line.textContent = indexes
+    const choices = indexes
       .map((index) => `${choiceLetter(index)}. ${truncate(question.choices[index] ?? '', 120)}`)
       .join('  ·  ');
+    line.textContent = answer?.status === 'guessed' ? `Best guess: ${choices}` : choices;
     item.append(line);
   }
   if (answer?.explanation) item.append(paragraph(answer.explanation));

@@ -27,15 +27,17 @@ export type Confidence = 'high' | 'medium' | 'low';
 
 /**
  * answered: a definite answer whose correct choices get the faint gray hover dot.
- * unsure: the model could not determine the answer (no dot is shown).
- * error: the request failed (no dot is shown).
+ * guessed: the model could not confirm the answer and named the most likely choices, which get a
+ * faint gray hover ring instead; its confidence is always low.
+ * unsure: the model gave no usable choice (nothing is shown).
+ * error: the request failed (nothing is shown).
  */
-export type AnswerStatus = 'answered' | 'unsure' | 'error';
+export type AnswerStatus = 'answered' | 'guessed' | 'unsure' | 'error';
 
 export interface AnswerRecord {
   key: string;
   status: AnswerStatus;
-  /** Normalized texts of the choices judged correct. Empty unless status is answered. */
+  /** Normalized texts of the choices judged or guessed correct. Empty unless answered or guessed. */
   correct: string[];
   confidence: Confidence | null;
   explanation: string;

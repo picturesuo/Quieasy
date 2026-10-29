@@ -16,6 +16,11 @@ describe('which choices get the gray hover dot', () => {
     expect(correctChoiceIndexes('multiple', ['2', '9', '11'], record('answered', ['11', '2']))).toEqual([0, 2]);
   });
 
+  it('marks the choice of a best guess the same way, so it can get its own ring', () => {
+    expect(correctChoiceIndexes('single', ['Sydney', 'Canberra'], record('guessed', ['canberra']))).toEqual([1]);
+    expect(correctChoiceIndexes('single', ['Sydney', 'Canberra'], record('guessed', ['sydney', 'canberra']))).toEqual([]);
+  });
+
   it('shows nothing for unsure, failed, missing or ambiguous answers', () => {
     expect(correctChoiceIndexes('single', ['A', 'B'], record('unsure', ['a']))).toEqual([]);
     expect(correctChoiceIndexes('single', ['A', 'B'], record('error', ['a']))).toEqual([]);

@@ -1,11 +1,12 @@
 /*
  * Quieasy hover dot. Shows only while the user's own pointer is over a choice Quieasy has marked
  * correct: a 3px faint dark gray dot centered in the native radio or checkbox, or just after the
- * choice for custom choices. It is absolutely positioned, so nothing on the page moves, and it
- * ignores the pointer. Hovering a <label> also counts as hovering its control.
+ * choice for custom choices. A best guess the AI could not confirm gets a 5px ring of the same
+ * gray in the same spot instead. It is absolutely positioned, so nothing on the page moves, and
+ * it ignores the pointer. Hovering a <label> also counts as hovering its control.
  */
-[data-quieasy="correct"]:hover [data-quieasy-dot]::after,
-[data-quieasy="correct"][data-quieasy-dot]:hover::after {
+[data-quieasy]:hover [data-quieasy-dot]::after,
+[data-quieasy][data-quieasy-dot]:hover::after {
   content: '' !important;
   display: inline !important;
   position: absolute !important;
@@ -16,20 +17,35 @@
   pointer-events: none !important;
 }
 
-[data-quieasy="correct"]:hover [data-quieasy-dot="native"],
-[data-quieasy="correct"][data-quieasy-dot="native"]:hover {
+[data-quieasy="guess"]:hover [data-quieasy-dot]::after,
+[data-quieasy="guess"][data-quieasy-dot]:hover::after {
+  box-sizing: border-box !important;
+  width: 5px !important;
+  height: 5px !important;
+  border: 1px solid rgba(55, 55, 55, 0.6) !important;
+  background: transparent !important;
+}
+
+[data-quieasy]:hover [data-quieasy-dot="native"],
+[data-quieasy][data-quieasy-dot="native"]:hover {
   position: relative !important;
 }
 
-[data-quieasy="correct"]:hover [data-quieasy-dot="native"]::after,
-[data-quieasy="correct"][data-quieasy-dot="native"]:hover::after {
+[data-quieasy]:hover [data-quieasy-dot="native"]::after,
+[data-quieasy][data-quieasy-dot="native"]:hover::after {
   top: 50% !important;
   left: 50% !important;
   transform: translate(-50%, -50%) !important;
 }
 
 /* Left at its static position: just after the choice's last line, like a period. */
-[data-quieasy="correct"]:hover [data-quieasy-dot="adjacent"]::after,
-[data-quieasy="correct"][data-quieasy-dot="adjacent"]:hover::after {
+[data-quieasy]:hover [data-quieasy-dot="adjacent"]::after,
+[data-quieasy][data-quieasy-dot="adjacent"]:hover::after {
   margin: 0.7em 0 0 3px !important;
+}
+
+/* The larger ring keeps the dot's center. */
+[data-quieasy="guess"]:hover [data-quieasy-dot="adjacent"]::after,
+[data-quieasy="guess"][data-quieasy-dot="adjacent"]:hover::after {
+  margin: calc(0.7em - 1px) 0 0 2px !important;
 }

@@ -90,6 +90,18 @@ describe('Anthropic request', () => {
   });
 });
 
+describe('instructions', () => {
+  it('ask every service for a labeled best guess instead of no answer when it cannot confirm one', () => {
+    for (const instructions of [anthropicRequest(question, opus).system, responsesRequest(question, bedrock).instructions]) {
+      expect(instructions).toContain('give your best guess');
+      expect(instructions).toContain('confidence "low"');
+      expect(instructions).toContain('say in the explanation that it is a guess');
+      expect(instructions).not.toContain('give no letters');
+      expect(instructions).toContain('Never invent a URL.');
+    }
+  });
+});
+
 describe('Responses API requests (OpenAI, Azure OpenAI, Amazon Bedrock)', () => {
   it('sends each service the same question-only body with web search and a strict JSON answer', () => {
     for (const config of [openai, azure, bedrock]) {
@@ -181,11 +193,32 @@ describe('reading replies', () => {
     expect(toAnswerRecord(question, reply, 0, 0)).toMatchObject({ status: 'answered', correct: ['canberra'] });
   });
 
-  it('treats low confidence, no letters, or several letters on a single-answer question as unsure', () => {
+  it('turns a low-confidence answer into a best guess on the choice the model picked', () => {
+    const guess = { letters: ['B'], confidence: 'low', explanation: 'Probably Canberra; the search did not settle it.', source_urls: [] };
+    const sure = { ...guess, confidence: 'high', explanation: 'Canberra is the capital.' };
+    for (const read of [
+      (input: unknown) => readAnthropicReplies([claudeMessage([recordAnswer(input as Record<string, unknown>)])], 'm'),
+      (input: unknown) => readResponsesReply(responsesReply(input), 'm'),
+    ]) {
+      expect(toAnswerRecord(question, read(guess), 0, 0)).toMatchObject({
+        status: 'guessed', correct: ['canberra'], confidence: 'low', explanation: guess.explanation, error: null,
+      });
+      expect(toAnswerRecord(question, read(sure), 0, 0)).toMatchObject({ status: 'answered', correct: ['canberra'], confidence: 'high' });
+    }
+    // A reply that leaves out its confidence is a guess too, never a confident answer.
+    const unrated = readResponsesReply(responsesReply({ letters: ['B'], explanation: '', source_urls: [] }), 'm');
+    expect(toAnswerRecord(question, unrated, 0, 0)).toMatchObject({ status: 'guessed', confidence: 'low' });
+    const primes: QuestionData = { ...question, kind: 'multiple', choices: ['2', '9', '11'] };
+    const several = readResponsesReply(responsesReply({ letters: ['C', 'A'], confidence: 'low', explanation: '', source_urls: [] }), 'm');
+    expect(toAnswerRecord(primes, several, 0, 0)).toMatchObject({ status: 'guessed', correct: ['2', '11'] });
+  });
+
+  it('is unsure, never guessing on its own, without letters or with several on a single-answer question', () => {
     for (const input of [
-      { letters: ['B'], confidence: 'low', explanation: '', source_urls: [] },
+      { letters: [], confidence: 'low', explanation: '', source_urls: [] },
       { letters: [], confidence: 'high', explanation: '', source_urls: [] },
       { letters: ['A', 'B'], confidence: 'high', explanation: '', source_urls: [] },
+      { letters: ['A', 'B'], confidence: 'low', explanation: '', source_urls: [] },
     ]) {
       for (const reply of [readAnthropicReplies([claudeMessage([recordAnswer(input)])], 'm'), readResponsesReply(responsesReply(input), 'm')]) {
         const result = toAnswerRecord(question, reply, 0, 0);
@@ -238,7 +271,8 @@ describe('answerQuestion', () => {
     for (const config of [anthropic, openai, azure, bedrock]) {
       for (const [status, message] of cases) {
         const result = await answerQuestion(question, config, signal(), 0, fakeFetch([[status, serviceText], [status, serviceText]]));
-        expect(result).toMatchObject({ status: 'error', correct: [] });
+        // A failed request stays an error: no letters, no confidence, never a guess.
+        expect(result).toMatchObject({ status: 'error', correct: [], confidence: null });
         expect(result.error).toMatch(message);
         expect(JSON.stringify(result)).not.toContain(KEY);
         expect(JSON.stringify(result)).not.toContain('Incorrect API key');

@@ -3,11 +3,13 @@ import type { AnswerRecord } from '../shared/types';
 import type { ExtractedQuestion } from './extract';
 
 /**
- * Hovering an element carrying this attribute shows a tiny faint gray dot (see content.css).
- * Quieasy never moves the pointer, focuses, clicks or selects anything.
+ * Hovering an element carrying this attribute shows a tiny faint gray dot, or a ring of the same
+ * gray for a best guess (see content.css). Quieasy never moves the pointer, focuses, clicks or
+ * selects anything.
  */
 export const MARK_ATTR = 'data-quieasy';
 export const MARK_CORRECT = 'correct';
+export const MARK_GUESS = 'guess';
 
 /**
  * Where the dot is drawn: centered inside a native radio or checkbox the browser draws itself
@@ -32,13 +34,14 @@ export function clearMarks(question: ExtractedQuestion): void {
   }
 }
 
-/** Marks the choices this answer judges correct; returns how many choices were marked. */
+/** Marks the choices this answer judges or guesses correct; returns how many choices were marked. */
 export function applyMarks(question: ExtractedQuestion, answer: AnswerRecord | null | undefined): number {
   clearMarks(question);
   const indexes = correctChoiceIndexes(question.data.kind, question.data.choices, answer);
+  const mark = answer?.status === 'guessed' ? MARK_GUESS : MARK_CORRECT;
   for (const index of indexes) {
     const targets = question.targets[index] ?? [];
-    targets.forEach((element) => element.setAttribute(MARK_ATTR, MARK_CORRECT));
+    targets.forEach((element) => element.setAttribute(MARK_ATTR, mark));
     const dot = dotHost(targets);
     if (dot) dot.element.setAttribute(DOT_ATTR, dot.placement);
   }

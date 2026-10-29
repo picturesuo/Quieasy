@@ -156,6 +156,7 @@ h2 {
   color: var(--green);
 }
 
+.status.guessed,
 .status.unsure,
 .status.pending {
   background: var(--amber-bg);

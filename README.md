@@ -43,7 +43,7 @@ A few things to know:
 
 Quieasy starts off every time you open your browser. On Canvas (`*.instructure.com`) it works on every page once you turn it on. On any other site, press the On shortcut while that tab is in front. You can change the shortcuts at `chrome://extensions/shortcuts`.
 
-Then hover over an answer choice. If the AI picked it, you see a faint dot. Questions the AI is unsure about get no dot. Turning Quieasy off clears everything.
+Then hover over an answer choice. If the AI picked it, you see a faint dot. If the AI couldn't confirm the answer, it still takes its best guess: that choice gets a faint ring instead of a dot, and the answer key labels it "best guess". Turning Quieasy off clears everything.
 
 ## Privacy
 

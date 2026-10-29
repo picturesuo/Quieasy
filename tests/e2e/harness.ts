@@ -361,24 +361,33 @@ export const DOT_COLOR = 'rgba(55, 55, 55, 0.6)';
 export interface DotState {
   /** Where a Quieasy dot is drawn for this choice right now, or null when none is visible. */
   placement: 'native' | 'adjacent' | null;
+  /** A filled dot marks an answer, a hollow ring a best guess the AI could not confirm. */
+  shape: 'dot' | 'ring' | null;
   /** The choice's own background, which Quieasy must never change. */
   background: string;
 }
 
 /**
- * Reads what the user currently sees on one choice: the 3px gray ::after dot on the element
- * Quieasy chose to draw it on (the choice itself, a control inside it, or a label's control).
+ * Reads what the user currently sees on one choice: the 3px gray ::after dot, or the 5px gray
+ * ring of a best guess, on the element Quieasy chose to draw it on (the choice itself, a control
+ * inside it, or a label's control).
  */
 export async function dotOf(choice: Locator): Promise<DotState> {
   return choice.evaluate((element, color) => {
     const candidates = [element, ...Array.from(element.querySelectorAll('[data-quieasy-dot]'))];
     if (element instanceof HTMLLabelElement && element.control) candidates.push(element.control);
     let placement: DotState['placement'] = null;
+    let shape: DotState['shape'] = null;
     for (const candidate of candidates) {
       const dot = getComputedStyle(candidate, '::after');
-      const drawn = dot.content !== 'none' && dot.width === '3px' && dot.height === '3px' && dot.backgroundColor === color;
-      if (drawn) placement = candidate.getAttribute('data-quieasy-dot') as DotState['placement'];
+      if (dot.content === 'none') continue;
+      const filled = dot.width === '3px' && dot.height === '3px' && dot.backgroundColor === color && dot.borderTopStyle === 'none';
+      const ring = dot.width === '5px' && dot.height === '5px' && dot.backgroundColor === 'rgba(0, 0, 0, 0)' &&
+        dot.borderTopStyle === 'solid' && dot.borderTopWidth === '1px' && dot.borderTopColor === color;
+      if (!filled && !ring) continue;
+      placement = candidate.getAttribute('data-quieasy-dot') as DotState['placement'];
+      shape = filled ? 'dot' : 'ring';
     }
-    return { placement, background: getComputedStyle(element).backgroundColor };
+    return { placement, shape, background: getComputedStyle(element).backgroundColor };
   }, DOT_COLOR);
 }
